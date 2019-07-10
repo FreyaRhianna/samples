@@ -1,7 +1,9 @@
-package com.whistleblower
+package com.whistleblower.flow
 
 import co.paralleluniverse.fibers.Suspendable
-import com.whistleblower.BlowWhistleContract.Commands.BlowWhistleCmd
+import com.whistleblower.contract.BlowWhistleContract
+import com.whistleblower.contract.BlowWhistleContract.Commands.BlowWhistleCmd
+import com.whistleblower.state.BlowWhistleState
 import net.corda.core.contracts.Command
 import net.corda.confidential.SwapIdentitiesFlow
 import net.corda.core.contracts.requireThat
@@ -63,7 +65,7 @@ class BlowWhistleFlow(private val badCompany: Party, private val investigator: P
         val output = BlowWhistleState(badCompany, anonymousMe, anonymousInvestigator)
         val command = Command(BlowWhistleCmd(), listOf(anonymousMe.owningKey, anonymousInvestigator.owningKey))
         val txBuilder = TransactionBuilder(serviceHub.networkMapCache.notaryIdentities.first())
-                .addOutputState(output, BLOW_WHISTLE_CONTRACT_ID)
+                .addOutputState(output, BlowWhistleContract.ID)
                 .addCommand(command)
 
         progressTracker.currentStep = VERIFY_TRANSACTION

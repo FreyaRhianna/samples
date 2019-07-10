@@ -1,8 +1,7 @@
 package com.whistleblower.contract
 
-import com.whistleblower.BLOW_WHISTLE_CONTRACT_ID
-import com.whistleblower.BlowWhistleContract.Commands.BlowWhistleCmd
-import com.whistleblower.BlowWhistleState
+import com.whistleblower.contract.BlowWhistleContract.Commands.BlowWhistleCmd
+import com.whistleblower.state.BlowWhistleState
 import net.corda.core.identity.CordaX500Name
 import net.corda.testing.contracts.DummyState
 import net.corda.testing.core.DummyCommandData
@@ -22,7 +21,7 @@ class BlowWhistleTests {
         // Wrong command type.
         ledgerServices.ledger {
             transaction {
-                output(BLOW_WHISTLE_CONTRACT_ID, BlowWhistleState(badCompany, whistleBlower, investigator))
+                output(BlowWhistleContract.ID, BlowWhistleState(badCompany, whistleBlower, investigator))
                 command(listOf(whistleBlower.owningKey, investigator.owningKey), DummyCommandData)
                 fails()
             }
@@ -30,7 +29,7 @@ class BlowWhistleTests {
 
         ledgerServices.ledger {
             transaction {
-                output(BLOW_WHISTLE_CONTRACT_ID, BlowWhistleState(badCompany, whistleBlower, investigator))
+                output(BlowWhistleContract.ID, BlowWhistleState(badCompany, whistleBlower, investigator))
                 command(listOf(whistleBlower.owningKey, investigator.owningKey), BlowWhistleCmd())
                 verifies()
             }
@@ -42,8 +41,8 @@ class BlowWhistleTests {
         // Input state.
         ledgerServices.ledger {
             transaction {
-                input(BLOW_WHISTLE_CONTRACT_ID, BlowWhistleState(badCompany, whistleBlower, investigator))
-                output(BLOW_WHISTLE_CONTRACT_ID, BlowWhistleState(badCompany, whistleBlower, investigator))
+                input(BlowWhistleContract.ID, BlowWhistleState(badCompany, whistleBlower, investigator))
+                output(BlowWhistleContract.ID, BlowWhistleState(badCompany, whistleBlower, investigator))
                 command(listOf(whistleBlower.owningKey, investigator.owningKey), BlowWhistleCmd())
                 fails()
             }
@@ -51,7 +50,7 @@ class BlowWhistleTests {
         // Wrong output state type.
         ledgerServices.ledger {
             transaction {
-                output(BLOW_WHISTLE_CONTRACT_ID, DummyState(0))
+                output(BlowWhistleContract.ID, DummyState(0))
                 command(listOf(whistleBlower.owningKey, investigator.owningKey), BlowWhistleCmd())
                 fails()
             }
@@ -59,8 +58,8 @@ class BlowWhistleTests {
         // Two output states.
         ledgerServices.ledger {
             transaction {
-                output(BLOW_WHISTLE_CONTRACT_ID, BlowWhistleState(badCompany, whistleBlower, investigator))
-                output(BLOW_WHISTLE_CONTRACT_ID, BlowWhistleState(badCompany, whistleBlower, investigator))
+                output(BlowWhistleContract.ID, BlowWhistleState(badCompany, whistleBlower, investigator))
+                output(BlowWhistleContract.ID, BlowWhistleState(badCompany, whistleBlower, investigator))
                 command(listOf(whistleBlower.owningKey, investigator.owningKey), BlowWhistleCmd())
                 fails()
             }
@@ -68,7 +67,7 @@ class BlowWhistleTests {
 
         ledgerServices.ledger {
             transaction {
-                output(BLOW_WHISTLE_CONTRACT_ID, BlowWhistleState(badCompany, whistleBlower, investigator))
+                output(BlowWhistleContract.ID, BlowWhistleState(badCompany, whistleBlower, investigator))
                 command(listOf(whistleBlower.owningKey, investigator.owningKey), BlowWhistleCmd())
                 verifies()
             }
@@ -80,7 +79,7 @@ class BlowWhistleTests {
         // No whistle-blower signature.
         ledgerServices.ledger {
             transaction {
-                output(BLOW_WHISTLE_CONTRACT_ID, BlowWhistleState(badCompany, whistleBlower, investigator))
+                output(BlowWhistleContract.ID, BlowWhistleState(badCompany, whistleBlower, investigator))
                 command(investigator.owningKey, BlowWhistleCmd())
                 fails()
             }
@@ -88,7 +87,7 @@ class BlowWhistleTests {
         // No investigator signature.
         ledgerServices.ledger {
             transaction {
-                output(BLOW_WHISTLE_CONTRACT_ID, BlowWhistleState(badCompany, whistleBlower, investigator))
+                output(BlowWhistleContract.ID, BlowWhistleState(badCompany, whistleBlower, investigator))
                 command(whistleBlower.owningKey, BlowWhistleCmd())
                 fails()
             }
@@ -96,7 +95,7 @@ class BlowWhistleTests {
 
         ledgerServices.ledger {
             transaction {
-                output(BLOW_WHISTLE_CONTRACT_ID, BlowWhistleState(badCompany, whistleBlower, investigator))
+                output(BlowWhistleContract.ID, BlowWhistleState(badCompany, whistleBlower, investigator))
                 command(listOf(whistleBlower.owningKey, investigator.owningKey), BlowWhistleCmd())
                 verifies()
             }

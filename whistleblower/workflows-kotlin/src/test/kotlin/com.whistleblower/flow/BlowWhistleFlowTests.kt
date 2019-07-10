@@ -1,6 +1,6 @@
 package com.whistleblower.flows
 
-import com.whistleblower.BlowWhistleState
+import com.whistleblower.state.BlowWhistleState
 import net.corda.core.node.services.queryBy
 import org.junit.Test
 import kotlin.test.assertEquals

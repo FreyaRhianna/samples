@@ -1,5 +1,6 @@
-package com.whistleblower
+package com.whistleblower.state
 
+import com.whistleblower.contract.BlowWhistleContract
 import net.corda.core.contracts.BelongsToContract
 import net.corda.core.contracts.LinearState
 import net.corda.core.contracts.UniqueIdentifier

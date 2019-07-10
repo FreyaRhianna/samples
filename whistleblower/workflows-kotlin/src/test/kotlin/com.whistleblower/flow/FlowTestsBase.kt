@@ -1,7 +1,7 @@
 package com.whistleblower.flows
 
-import com.whistleblower.BlowWhistleFlow
-import com.whistleblower.BlowWhistleFlowResponder
+import com.whistleblower.flow.BlowWhistleFlow
+import com.whistleblower.flow.BlowWhistleFlowResponder
 import net.corda.core.identity.AnonymousParty
 import net.corda.core.identity.Party
 import net.corda.core.transactions.SignedTransaction
@@ -23,7 +23,8 @@ abstract class FlowTestsBase {
     @Before
     fun setup() {
         network = MockNetwork(MockNetworkParameters(cordappsForAllNodes = listOf(
-                TestCordapp.findCordapp("com.whistleblower"))))
+                TestCordapp.findCordapp("com.whistleblower.contract"),
+                TestCordapp.findCordapp("com.whistleblower.flow"))))
         whistleBlower = network.createPartyNode()
         firstInvestigator = network.createPartyNode()
         badCompany = network.createPartyNode()

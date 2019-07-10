@@ -1,12 +1,12 @@
-package com.whistleblower
+package com.whistleblower.contract
 
+import com.whistleblower.state.BlowWhistleState
 import net.corda.core.contracts.CommandData
 import net.corda.core.contracts.Contract
 import net.corda.core.contracts.requireSingleCommand
 import net.corda.core.contracts.requireThat
 import net.corda.core.transactions.LedgerTransaction
 
-const val BLOW_WHISTLE_CONTRACT_ID = "com.whistleblower.BlowWhistleContract"
 
 /**
  * A contract supporting two state transitions:
@@ -14,6 +14,9 @@ const val BLOW_WHISTLE_CONTRACT_ID = "com.whistleblower.BlowWhistleContract"
  * - Transferring an existing case to a new investigator
  */
 class BlowWhistleContract : Contract {
+    companion object{
+        const val ID = "com.whistleblower.contract.BlowWhistleContract"
+    }
     override fun verify(tx: LedgerTransaction) {
         val cmd = tx.commands.requireSingleCommand<Commands>()
         when (cmd.value) {
