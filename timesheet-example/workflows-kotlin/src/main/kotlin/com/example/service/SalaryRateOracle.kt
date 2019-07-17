@@ -1,7 +1,6 @@
 package com.example.service
 
 import com.example.contract.InvoiceContract
-import javafx.util.Pair
 import liquibase.util.csv.opencsv.CSVReader
 import net.corda.core.contracts.Command
 import net.corda.core.crypto.TransactionSignature
