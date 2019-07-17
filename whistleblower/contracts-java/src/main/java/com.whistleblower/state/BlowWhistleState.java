@@ -26,17 +26,17 @@ import java.util.List;
 public class BlowWhistleState implements LinearState {
     private Party badCompany;
     private AnonymousParty whistleBlower;
-    private AnonymousParty investigtor;
+    private AnonymousParty investigator;
     private UniqueIdentifier linearId;
 
     public AnonymousParty getWhistleBlower(){ return this.whistleBlower;}
-    public AnonymousParty getInvestigator(){ return this.investigtor;}
+    public AnonymousParty getInvestigator(){ return this.investigator;}
+    public Party getBadCompany(){ return this.badCompany;}
 
-
-    public BlowWhistleState(Party badCompany, AnonymousParty whistleBlower, AnonymousParty investigtor){
+    public BlowWhistleState(Party badCompany, AnonymousParty whistleBlower, AnonymousParty investigator){
         this.badCompany = badCompany;
         this.whistleBlower = whistleBlower;
-        this.investigtor = investigtor;
+        this.investigator = investigator;
         linearId = new UniqueIdentifier();
     }
     @NotNull
@@ -48,7 +48,7 @@ public class BlowWhistleState implements LinearState {
     @NotNull
     @Override
     public List<AbstractParty> getParticipants() {
-        return ImmutableList.of(whistleBlower, investigtor);
+        return ImmutableList.of(whistleBlower, investigator);
     }
 }
 
