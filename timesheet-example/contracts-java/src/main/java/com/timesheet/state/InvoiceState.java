@@ -1,7 +1,9 @@
 package com.timesheet.state;
 
 import com.google.common.collect.ImmutableList;
-import com.timesheet.schema.InvoiceSchemaV1
+import com.timesheet.contract.InvoiceContract;
+import com.timesheet.schema.InvoiceSchemaV1;
+import net.corda.core.contracts.BelongsToContract;
 import net.corda.core.contracts.LinearState;
 import net.corda.core.contracts.UniqueIdentifier;
 import net.corda.core.identity.AbstractParty;
@@ -14,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 
+@BelongsToContract(InvoiceContract.class)
 public class InvoiceState implements QueryableState, LinearState {
 
     private LocalDate date;
@@ -24,6 +27,38 @@ public class InvoiceState implements QueryableState, LinearState {
     private Party oracle;
     private Boolean paid = false;
     private UniqueIdentifier linearID = new UniqueIdentifier();
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public int getHoursWorked() {
+        return hoursWorked;
+    }
+
+    public Double getRate() {
+        return rate;
+    }
+
+    public Party getContractor() {
+        return contractor;
+    }
+
+    public Party getCompany() {
+        return company;
+    }
+
+    public Party getOracle() {
+        return oracle;
+    }
+
+    public Boolean getPaid() {
+        return paid;
+    }
+
+    public UniqueIdentifier getLinearID() {
+        return linearID;
+    }
 
     @NotNull
     @Override
@@ -46,8 +81,6 @@ public class InvoiceState implements QueryableState, LinearState {
         }else{
             throw new IllegalArgumentException("Unrecognised schema " + schema.toString());
         }
-
-
     }
 
     @NotNull
