@@ -16,7 +16,7 @@ To issue an invoice from the contractor to the company, go to the Contractor nod
     
 In order for the invoice to be paid, you first need to retrieve the UUID of the invoice. From the MegaCorp 1 node run:
 
-    run vaultQuery contractStateType: com.example.state.InvoiceState
+    run vaultQuery contractStateType: com.timesheet.state.InvoiceState
 
 Find the linearID of the invoice state (it should be 32 characters). Using that, run from the MegaCorp 1 node:
 
