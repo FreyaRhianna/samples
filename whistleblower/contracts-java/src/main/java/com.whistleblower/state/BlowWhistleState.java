@@ -29,6 +29,10 @@ public class BlowWhistleState implements LinearState {
     private AnonymousParty investigtor;
     private UniqueIdentifier linearId;
 
+    public AnonymousParty getWhistleBlower(){ return this.whistleBlower;}
+    public AnonymousParty getInvestigator(){ return this.investigtor;}
+
+
     public BlowWhistleState(Party badCompany, AnonymousParty whistleBlower, AnonymousParty investigtor){
         this.badCompany = badCompany;
         this.whistleBlower = whistleBlower;

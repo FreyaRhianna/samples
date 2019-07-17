@@ -72,40 +72,35 @@ public class BlowWhistleTests {
         });
     }
 
+    @Test
+    public void ABlowWhistleTransactionShouldBeSignedByTeWhistleBlowerAndTheInvestigator(){
+        ledger(ledgerServices, ledger ->{
+            // No whistle-blower signature.
+            ledger.transaction(tx -> {
+                tx.output(BlowWhistleContract.ID, new BlowWhistleState(badCompany, whistleBlower, investigator));
+                tx.command(investigator.getOwningKey(), new BlowWhistleContract.Commands.BlowWhistleCmd());
+                tx.failsWith("A BlowWhistle transaction should be signed by the whistle-blower and the investigator.");
+                return null;
+            });
+
+            // No investigator signature
+            ledger.transaction(tx -> {
+                tx.output(BlowWhistleContract.ID, new BlowWhistleState(badCompany, whistleBlower, investigator));
+                tx.command(whistleBlower.getOwningKey(), new BlowWhistleContract.Commands.BlowWhistleCmd());
+                tx.failsWith("A BlowWhistle transaction should be signed by the whistle-blower and the investigator.");
+                return null;
+            });
+
+            ledger.transaction(tx -> {
+                tx.output(BlowWhistleContract.ID, new BlowWhistleState(badCompany, whistleBlower, investigator));
+                tx.command(ImmutableList.of(whistleBlower.getOwningKey(),investigator.getOwningKey()), new BlowWhistleContract.Commands.BlowWhistleCmd());
+                tx.verifies();
+                return null;
+            });
+           return null;
+        });
+    }
+
 }
 
 class DummyCommandData implements CommandData {}
-/*
-
-
-    @Test
-    fun `A BlowWhistle transaction should be signed by the whistle-blower and the investigator`() {
-        // No whistle-blower signature.
-        ledgerServices.ledger {
-            transaction {
-                output(BlowWhistleContract.ID, BlowWhistleState(badCompany, whistleBlower, investigator))
-                command(investigator.owningKey, BlowWhistleCmd())
-                fails()
-            }
-        }
-        // No investigator signature.
-        ledgerServices.ledger {
-            transaction {
-                output(BlowWhistleContract.ID, BlowWhistleState(badCompany, whistleBlower, investigator))
-                command(whistleBlower.owningKey, BlowWhistleCmd())
-                fails()
-            }
-        }
-
-        ledgerServices.ledger {
-            transaction {
-                output(BlowWhistleContract.ID, BlowWhistleState(badCompany, whistleBlower, investigator))
-                command(listOf(whistleBlower.owningKey, investigator.owningKey), BlowWhistleCmd())
-                verifies()
-            }
-        }
-    }
-}
-
-
- */
