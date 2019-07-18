@@ -29,6 +29,7 @@ class SalaryRateOracle(private val services: AppServiceHub) : SingletonSerialize
 
     init {
         val reader = CSVReader(StringReader(javaClass.getResource("/payRates.csv").readText()))
+
         val lines = reader.readAll()
         for (line in lines) {
             payRateTable[Pair(line[0].trim(), line[1].trim())] = line[2].trim().toDouble()

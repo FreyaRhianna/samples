@@ -1,6 +1,7 @@
 package com.timesheet.schema;
 
 import com.google.common.collect.ImmutableList;
+import com.timesheet.contract.InvoiceContract;
 import net.corda.core.contracts.UniqueIdentifier;
 import net.corda.core.schemas.MappedSchema;
 import net.corda.core.schemas.PersistentState;
@@ -22,7 +23,7 @@ public class InvoiceSchemaV1 extends MappedSchema {
     }
 
     public InvoiceSchemaV1(){
-        super();
+        this(InvoiceSchema.class, 1, ImmutableList.of(PersistentInvoice.class));
     }
 
 

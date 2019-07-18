@@ -56,11 +56,23 @@ public class InvoiceContract implements Contract {
             });
         }
     }
-    interface Commands extends CommandData {
+    public interface Commands extends CommandData {
         class Create implements Commands{
             private Party contractor;
             private Party company;
             private Double rate;
+
+            public Party getContractor() {
+                return contractor;
+            }
+
+            public Party getCompany() {
+                return company;
+            }
+
+            public Double getRate() {
+                return rate;
+            }
 
             public Create(Party contractor, Party company, Double rate){
                 this.contractor = contractor;
