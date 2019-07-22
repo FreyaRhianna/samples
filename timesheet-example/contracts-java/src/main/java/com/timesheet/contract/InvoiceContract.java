@@ -1,7 +1,5 @@
 package com.timesheet.contract;
 
-import com.google.common.collect.ImmutableList;
-import com.timesheet.schema.InvoiceSchema;
 import com.timesheet.state.InvoiceState;
 import net.corda.core.contracts.Command;
 import net.corda.core.contracts.CommandData;
@@ -16,7 +14,6 @@ import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.corda.core.contracts.ContractsDSL.requireSingleCommand;
 import static net.corda.core.contracts.ContractsDSL.requireThat;
 
 public class InvoiceContract implements Contract {

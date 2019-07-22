@@ -1,7 +1,9 @@
 package com.timesheet.service;
 
 import net.corda.core.identity.Party;
+import net.corda.core.serialization.CordaSerializable;
 
+@CordaSerializable
 public class RateOf {
     private Party contractor;
     private Party company;

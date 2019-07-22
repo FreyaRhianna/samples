@@ -6,8 +6,7 @@ import com.timesheet.contract.InvoiceContract;
 import com.timesheet.service.Rate;
 import com.timesheet.service.RateOf;
 import com.timesheet.state.InvoiceState;
-import net.corda.core.contracts.Command;
-import net.corda.core.contracts.ContractState;
+import net.corda.core.contracts.*;
 import net.corda.core.crypto.SecureHash;
 import net.corda.core.flows.*;
 import net.corda.core.identity.AbstractParty;
@@ -17,7 +16,6 @@ import net.corda.core.transactions.FilteredTransaction;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.ProgressTracker;
-import org.intellij.lang.annotations.Flow;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.PublicKey;
@@ -25,7 +23,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.logging.Filter;
 
 /**
  * This flow allows two parties (the [Initiator] and the [Acceptor]) to come to an agreement about the Invoice encapsulated
@@ -43,7 +40,7 @@ public class IssueInvoiceFlow {
 
     @InitiatingFlow
     @StartableByRPC
-    class Initiator extends FlowLogic<SignedTransaction>{
+    public static class Initiator extends FlowLogic<SignedTransaction>{
         private int hoursWorked;
         private LocalDate date;
         private Party otherParty;
@@ -61,7 +58,7 @@ public class IssueInvoiceFlow {
         ProgressTracker.Step ORACLE_SIGNS = new ProgressTracker.Step("Requesting oracle signature.");
         ProgressTracker.Step GATHERING_SIGS = new ProgressTracker.Step("Gathering the counterparty's signature."){
             public ProgressTracker childProgressTracker() {
-                return FinalityFlow.Companion.tracker();
+                return CollectSignaturesFlow.tracker();
             }
         };
         ProgressTracker.Step FINALISING_TRANSACTION = new ProgressTracker.Step("Determining salary rate for contractorompany."){
@@ -118,6 +115,7 @@ public class IssueInvoiceFlow {
             // Verify that the transaction is valid.
             txBuilder.verify(getServiceHub());
 
+
             // Stage 4
             progressTracker.setCurrentStep(SIGNING_TRANSACTION);
             // Sign the transaction
@@ -162,7 +160,7 @@ public class IssueInvoiceFlow {
 
     @InitiatingFlow
     @InitiatedBy(Initiator.class)
-    class Acceptor extends FlowLogic<SignedTransaction>{
+    public static class Acceptor extends FlowLogic<SignedTransaction>{
 
         FlowSession otherPartySession;
         InvoiceState invoice;

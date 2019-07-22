@@ -108,7 +108,7 @@ public class PayInvoiceFlow {
 
     @InitiatingFlow
     @InitiatedBy(Initiator.class)
-    class Acceptor extends FlowLogic<SignedTransaction>{
+    public static class Acceptor extends FlowLogic<SignedTransaction>{
         FlowSession otherPartySession;
 
         public Acceptor(FlowSession otherPartySession) {

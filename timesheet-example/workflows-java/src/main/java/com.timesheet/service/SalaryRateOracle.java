@@ -16,11 +16,12 @@ import liquibase.util.csv.CSVReader;
 import net.corda.core.contracts.Command;
 import net.corda.core.crypto.TransactionSignature;
 import net.corda.core.node.AppServiceHub;
+
 import net.corda.core.node.services.CordaService;
 import net.corda.core.serialization.SingletonSerializeAsToken;
 import net.corda.core.transactions.FilteredTransaction;
 import net.corda.core.transactions.FilteredTransactionVerificationException;
-
+import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.StringReader;
 import java.security.PublicKey;
@@ -32,13 +33,22 @@ public class SalaryRateOracle extends SingletonSerializeAsToken {
     private AppServiceHub services;
     private HashMap<Pair<String,String>,Double> payRateTable = new HashMap<>();
     private PublicKey myKey;
-    SalaryRateOracle(){
+    public SalaryRateOracle(AppServiceHub services) throws IOException {
+        this.services = services;
         myKey = services.getMyInfo().getLegalIdentities().get(0).getOwningKey();
-        CSVReader reader =  new CSVReader(new StringReader(getClass().getResourceAsStream("/payRate.csv").toString()));
+        CSVReader reader =  new CSVReader(new StringReader(IOUtils.toString(getClass().getResource("/payRates.csv"))));
+        //CSVReader reader = new CSVReader(new FileReader("/payRates.csv"));
+
         try {
+           /* while((lines = reader.readNext()) != null){
+                payRateTable.put(new Pair(lines[0].trim(), lines[1].trim()),Double.parseDouble(lines[2].trim()));
+
+            }
+            */
             List<String[]> lines = reader.readAll();
             for (String[] line: lines
                  ) {
+                System.out.println(line.length);
                 payRateTable.put(new Pair(line[0].trim(), line[1].trim()),Double.parseDouble(line[2].trim()));
             }
         } catch (IOException e) {
@@ -52,11 +62,7 @@ public class SalaryRateOracle extends SingletonSerializeAsToken {
         return new Rate(rateOf, payRateTable.get(new Pair(rateOf.getContractor().getName().getOrganisation(), rateOf.getCompany().getName().getOrganisation())));
     }
 
-    // Signs over a transaction if the specified Nth prime for a particular N is correct.
-    // This function takes a filtered transaction which is a partial Merkle tree. Any parts of the transaction which
-    // the oracle doesn't need to see in order to verify the correctness of the nth prime have been removed. In this
-    // case, all but the [PrimeContract.Create] commands have been removed. If the Nth prime is correct then the oracle
-    // signs over the Merkle root (the hash) of the transaction.
+
     public TransactionSignature sign(FilteredTransaction ftx){
         try {
             ftx.verify();
@@ -66,12 +72,12 @@ public class SalaryRateOracle extends SingletonSerializeAsToken {
 
 
         Boolean isValidMerkleTree = ftx.checkWithFun((Object elem)->{
-            if(elem instanceof Command){
+//            if(elem instanceof Command){
                 if(((Command) elem).getValue() instanceof InvoiceContract.Commands.Create){
                     InvoiceContract.Commands.Create cmdData = (InvoiceContract.Commands.Create) ((Command) elem).getValue();
-                    return (((Command) elem).getSigners().contains(myKey) && query(new RateOf(cmdData.getContractor(), cmdData.getCompany())).getVal() == cmdData.getRate());
+                    return (((Command) elem).getSigners().contains(myKey) && query(new RateOf(cmdData.getContractor(), cmdData.getCompany())).getVal().equals(cmdData.getRate()));
                 }
-            }
+            //}
             return false;
         });
 
@@ -81,5 +87,6 @@ public class SalaryRateOracle extends SingletonSerializeAsToken {
             throw new IllegalArgumentException("SalaryRateOracle signature requested over invalid transaction.");
         }
     }
+
 
 }
