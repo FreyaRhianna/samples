@@ -1,9 +1,9 @@
 package com.timesheet.flow;
 
 import co.paralleluniverse.fibers.Suspendable;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.timesheet.contract.InvoiceContract;
+import com.timesheet.schema.InvoiceSchemaV1;
 import com.timesheet.state.InvoiceState;
 
 import net.corda.core.contracts.Amount;
@@ -12,6 +12,9 @@ import net.corda.core.contracts.StateAndRef;
 
 import net.corda.core.flows.*;
 import net.corda.core.identity.Party;
+import net.corda.core.node.services.vault.Builder;
+import net.corda.core.node.services.vault.CriteriaExpression;
+import net.corda.core.node.services.vault.FieldInfo;
 import net.corda.core.node.services.vault.QueryCriteria;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
@@ -19,9 +22,11 @@ import net.corda.core.utilities.OpaqueBytes;
 import net.corda.core.utilities.ProgressTracker;
 import net.corda.finance.flows.CashIssueFlow;
 import net.corda.finance.workflows.asset.CashUtils;
+
 import java.util.Currency;
 import java.util.UUID;
 
+import static net.corda.core.node.services.vault.QueryCriteriaUtils.getField;
 import static net.corda.finance.Currencies.POUNDS;
 
 /**
@@ -38,7 +43,7 @@ import static net.corda.finance.Currencies.POUNDS;
 public class PayInvoiceFlow {
  @InitiatingFlow
  @StartableByRPC
- class Initiator extends FlowLogic<SignedTransaction>{
+ public static class Initiator extends FlowLogic<SignedTransaction>{
      private UUID invoiceId;
      private ProgressTracker.Step GENERATING_TRANSACTION = new ProgressTracker.Step("Generating transaction based on new hours submission.");
      private ProgressTracker.Step VERIFYING_TRANSACTION = new ProgressTracker.Step("Verifying contract constraints.");
@@ -65,12 +70,33 @@ public class PayInvoiceFlow {
       * The progress tracker checkpoints each stage of the flow and outputs the specified messages when each
       * checkpoint is reached in the code. See the 'progressTracker.currentStep' expressions within the call() function.
       */
+     @Suspendable
      @Override
      public SignedTransaction call() throws FlowException {
          // Obtain a reference to the notary we want to use.
 
          Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
-         StateAndRef invoiceAndRef = getServiceHub().getVaultService().queryBy(InvoiceState.class, new QueryCriteria.LinearStateQueryCriteria().withUuid(ImmutableList.of(invoiceId))).getStates().get(0);
+
+         System.out.print(getServiceHub().getVaultService().queryBy(InvoiceState.class, new QueryCriteria.LinearStateQueryCriteria()).getStates());
+        // StateAndRef invoiceAndRef = getServiceHub().getVaultService().queryBy(InvoiceState.class).getStates().get(0);
+         //System.out.println("CCCCCCCCCCcc");
+         //System.out.println(((InvoiceState) invoiceAndRef.getState().getData()).getLinearID().getId());
+
+         FieldInfo linearId = null;
+         try {
+             linearId = getField("linearId", InvoiceSchemaV1.PersistentInvoice.class);
+         } catch (NoSuchFieldException e) {
+             System.out.println("No such field");
+             e.printStackTrace();
+         }
+         CriteriaExpression linearCriteria = Builder.equal(linearId, invoiceId);
+
+         QueryCriteria customCriteria = new QueryCriteria.VaultCustomQueryCriteria(linearCriteria);
+
+
+         StateAndRef invoiceAndRef = getServiceHub().getVaultService().queryBy(InvoiceState.class, customCriteria).getStates().get(0);
+        // StateAndRef invoiceAndRe = getServiceHub().getVaultService().queryBy(InvoiceState.class, new QueryCriteria.LinearStateQueryCriteria(linearId = ImmutableList.of(new UniqueIdentifier(null, invoiceId)))).getStates().get(0);
+                 //.withUuid(ImmutableList.of(invoiceId))).getStates().get(0);
          InvoiceState invoice = (InvoiceState) invoiceAndRef.getState().getData();
          Amount<Currency> paymentAmount = POUNDS ((invoice.getHoursWorked() * invoice.getRate()));
          // We're MegaCorp.  Let's print some money.

@@ -10,7 +10,6 @@ import net.corda.core.contracts.StateAndRef;
 import net.corda.core.contracts.TransactionState;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.core.transactions.SignedTransaction;
-import net.corda.core.transactions.TransactionBuilder;
 import net.corda.testing.node.MockNetwork;
 import net.corda.testing.node.MockNetworkParameters;
 import net.corda.testing.node.StartedMockNode;
@@ -38,9 +37,7 @@ public class IssueInvoiceFlowTests {
         network = new MockNetwork(new MockNetworkParameters(
                 ImmutableList.of(
                         TestCordapp.findCordapp("com.timesheet.contract"),
-                        TestCordapp.findCordapp("com.timesheet.flow"),
-                        TestCordapp.findCordapp("com.timesheet.state"),
-                        TestCordapp.findCordapp("com.timesheet.service")
+                        TestCordapp.findCordapp("com.timesheet.flow")
                 )
         ));
         CordaX500Name oracleName = new CordaX500Name("Oracle", "London", "GB");
@@ -81,7 +78,7 @@ public class IssueInvoiceFlowTests {
     }
 
     @Test
-    public void SignedTRansactionReturnedByFlowIsSignedByAcceptor() throws SignatureException, ExecutionException, InterruptedException {
+    public void SignedTransactionReturnedByFlowIsSignedByAcceptor() throws SignatureException, ExecutionException, InterruptedException {
         IssueInvoiceFlow.Initiator flow = new IssueInvoiceFlow.Initiator(1, today, megaCorp.getInfo().getLegalIdentities().get(0));
         Future future = contractor.startFlow(flow);
         network.runNetwork();
@@ -91,7 +88,7 @@ public class IssueInvoiceFlowTests {
     }
 
     @Test
-    public void FlowRecordsATransationInBothPartiesTransactioStorage() throws ExecutionException, InterruptedException {
+    public void FlowRecordsATransactionInBothPartiesTransactioStorage() throws ExecutionException, InterruptedException {
         IssueInvoiceFlow.Initiator flow = new IssueInvoiceFlow.Initiator(1, today, megaCorp.getInfo().getLegalIdentities().get(0));
         Future future = contractor.startFlow(flow);
         network.runNetwork();

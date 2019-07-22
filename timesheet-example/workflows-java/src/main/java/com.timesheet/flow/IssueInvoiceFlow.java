@@ -178,7 +178,7 @@ public class IssueInvoiceFlow {
                     if(!(output instanceof InvoiceState )){
                         throw new FlowException("This must be an invoice transaction");
                     }
-                    InvoiceState invoice = (InvoiceState) output;
+                    invoice = (InvoiceState) output;
                     if(!(invoice.getHoursWorked() <= 10)){
                         throw new FlowException("Invoices with a value over 10 aren't accepted");
                     }

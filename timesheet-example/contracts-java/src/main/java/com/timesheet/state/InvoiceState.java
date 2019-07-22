@@ -27,7 +27,7 @@ public class InvoiceState implements QueryableState, LinearState {
     private Party company;
     private Party oracle;
     private Boolean paid = false;
-    private UniqueIdentifier linearID = new UniqueIdentifier();
+    private UniqueIdentifier linearID;
 
     public LocalDate getDate() {
         return date;
@@ -62,7 +62,7 @@ public class InvoiceState implements QueryableState, LinearState {
     }
 
     @ConstructorForDeserialization
-    public InvoiceState(LocalDate date, int hoursWorked, Double rate, Party contractor, Party company, Party oracle, Boolean paid ){
+    public InvoiceState(LocalDate date, int hoursWorked, Double rate, Party contractor, Party company, Party oracle, Boolean paid, UniqueIdentifier linearID ){
         this.date = date;
         this.hoursWorked = hoursWorked;
         this.rate = rate;
@@ -70,6 +70,13 @@ public class InvoiceState implements QueryableState, LinearState {
         this.company = company;
         this.oracle = oracle;
         this.paid = paid;
+        this.linearID = linearID;
+
+    }
+
+    public InvoiceState(LocalDate date, int hoursWorked, Double rate, Party contractor, Party company, Party oracle, Boolean paid ){
+        this(date, hoursWorked, rate, contractor, company, oracle, paid, new UniqueIdentifier());
+
     }
 
     public InvoiceState(LocalDate date, int hoursWorked, Double rate, Party contractor, Party company, Party oracle ){
