@@ -56,6 +56,9 @@ tasks.withType(JavaCompile) {
 task deployNodes(type: Cordform, dependsOn: ['jar']) {
     nodeDefaults {
         cordapp project(":contracts-java")
+        cordapp("$corda_release_group:corda-finance-workflows:$corda_release_version")
+        cordapp("$corda_release_group:corda-finance-contracts:$corda_release_version")
+
     }
     node {
         name "O=Notary,L=London,C=GB"

@@ -78,9 +78,6 @@ public class PayInvoiceFlow {
          Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
 
          System.out.print(getServiceHub().getVaultService().queryBy(InvoiceState.class, new QueryCriteria.LinearStateQueryCriteria()).getStates());
-        // StateAndRef invoiceAndRef = getServiceHub().getVaultService().queryBy(InvoiceState.class).getStates().get(0);
-         //System.out.println("CCCCCCCCCCcc");
-         //System.out.println(((InvoiceState) invoiceAndRef.getState().getData()).getLinearID().getId());
 
          FieldInfo linearId = null;
          try {
@@ -95,8 +92,6 @@ public class PayInvoiceFlow {
 
 
          StateAndRef invoiceAndRef = getServiceHub().getVaultService().queryBy(InvoiceState.class, customCriteria).getStates().get(0);
-        // StateAndRef invoiceAndRe = getServiceHub().getVaultService().queryBy(InvoiceState.class, new QueryCriteria.LinearStateQueryCriteria(linearId = ImmutableList.of(new UniqueIdentifier(null, invoiceId)))).getStates().get(0);
-                 //.withUuid(ImmutableList.of(invoiceId))).getStates().get(0);
          InvoiceState invoice = (InvoiceState) invoiceAndRef.getState().getData();
          Amount<Currency> paymentAmount = POUNDS ((invoice.getHoursWorked() * invoice.getRate()));
          // We're MegaCorp.  Let's print some money.

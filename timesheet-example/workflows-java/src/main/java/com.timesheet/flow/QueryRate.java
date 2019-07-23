@@ -23,8 +23,7 @@ public class QueryRate extends FlowLogic<Rate> {
     @Override
     public Rate call() throws FlowException {
         return initiateFlow(oracle).sendAndReceive(Rate.class, rateOf).unwrap((it ->{
-            System.out.println(rateOf.toString());
-            System.out.println(it.getOf().toString());
+
             if(it.getOf().getCompany().equals(rateOf.getCompany()) && (it.getOf().getContractor().equals(rateOf.getContractor()))){
                 return it;
             }else{

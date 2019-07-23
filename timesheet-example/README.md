@@ -21,3 +21,4 @@ In order for the invoice to be paid, you first need to retrieve the UUID of the 
 Find the linearID of the invoice state (it should be 32 characters). Using that, run from the MegaCorp 1 node:
 
     flow start PayInvoiceFlow invoiceId: <UUID of invoice state>
+    
