@@ -29,9 +29,9 @@ First, go the the shell of BraveEmployee, and report BadCompany to the TradeBody
 
     flow start BlowWhistleFlow badCompany: BadCompany, investigator: TradeBody
     
-To see the whistle-blowing case stored on the whistle-blowing node, run:
+To see the whistle-blowing case stored on the TradeBody node, run:
 
-    run vaultQuery contractStateType: com.whistleblower.BlowWhistleState
+    run vaultQuery contractStateType: com.whistleblower.state.BlowWhistleState
 
     [ {
       "badCompany" : "C=KE,L=Eldoret,O=BadCompany",
