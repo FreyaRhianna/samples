@@ -9,13 +9,12 @@ import net.corda.core.identity.AbstractParty
 import net.corda.core.identity.Party
 
 /**
- * The state object recording IOU agreements between two parties.
+ * The state object recording list of untrusted parties.
  *
  * A state must implement [ContractState] or one of its descendants.
  *
- * @param value the value of the IOU.
- * @param lender the party issuing the IOU.
- * @param borrower the party receiving and approving the IOU.
+ * @param badPeople list of untrusted parties.
+ * @param issuer the party issuing the sanctioned list.
  */
 @BelongsToContract(SanctionedEntitiesContract::class)
 data class SanctionedEntities(

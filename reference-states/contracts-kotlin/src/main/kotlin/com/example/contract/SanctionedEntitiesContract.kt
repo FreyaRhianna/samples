@@ -41,7 +41,7 @@ class SanctionedEntitiesContract : Contract {
     }
 
     /**
-     * This contract only implements one command, Create.
+     * This contract implements two commands, Create and Update.
      */
     interface Commands : CommandData {
         object Create : Commands
