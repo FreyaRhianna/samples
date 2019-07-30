@@ -170,7 +170,7 @@ class IOUFlowTests {
     }
 
     @Test
-    fun `during tx resoludtion, latest ref state is provided to counterparty`() {
+    fun `during tx resolution, latest ref state is provided to counterparty`() {
         val issuanceFlow = issuer.startFlow(IssueSanctionsListFlow.Initiator())
         network.runNetwork()
         issuanceFlow.getOrThrow()

@@ -71,12 +71,12 @@ object IssueSanctionsListFlow {
 
             txBuilder.verify(serviceHub)
 
-            // Stage 3.
+            // Stage 2.
             progressTracker.currentStep = SIGNING_TRANSACTION
             // Sign the transaction.
             val partSignedTx = serviceHub.signInitialTransaction(txBuilder)
 
-            // Stage 5.
+            // Stage 3.
             progressTracker.currentStep = FINALISING_TRANSACTION
             // Notarise and record the transaction in both parties' vaults.
             return subFlow(

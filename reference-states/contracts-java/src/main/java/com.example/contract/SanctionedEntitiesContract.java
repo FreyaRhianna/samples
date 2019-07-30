@@ -41,7 +41,7 @@ public class SanctionedEntitiesContract implements Contract {
     }
 
 
-    interface Commands extends CommandData {
+    public interface Commands extends CommandData {
         class Create implements Commands {};
         class Update implements  Commands {};
     }

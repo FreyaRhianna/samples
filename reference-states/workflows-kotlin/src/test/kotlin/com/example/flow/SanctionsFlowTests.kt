@@ -51,6 +51,9 @@ class SanctionsFlowTests {
         val getFlow = GetSanctionsListFlow.Initiator(a.info.legalIdentities.first())
         val getListFuture = b.startFlow(getFlow)
         network.runNetwork()
+        print("HEEERRREE")
+        print(issueListFuture.get().state.data)
+        print(getListFuture.get().get(0).state.data)
 
         assertEquals(issueListFuture.get().state.data, getListFuture.get().single().state.data)
 
