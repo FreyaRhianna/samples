@@ -4,6 +4,8 @@ import com.example.contract.SanctionedEntitiesContract;
 import com.example.state.SanctionableIOUState;
 import com.google.common.collect.ImmutableList;
 import net.corda.core.contracts.TransactionVerificationException;
+import net.corda.core.flows.FlowSession;
+import net.corda.core.flows.NotaryException;
 import net.corda.core.identity.Party;
 import net.corda.core.node.NetworkParameters;
 import net.corda.core.transactions.SignedTransaction;
@@ -18,6 +20,7 @@ import org.junit.rules.ExpectedException;
 import java.security.SignatureException;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -113,8 +116,100 @@ public class IOUFlowTests {
         Future future = a.startFlow(flow);
         network.runNetwork();
 
-
         future.get();
+    }
+
+    @Test
+    public void dealFailsIfListIsUpdatedAfterCollection() throws ExecutionException, InterruptedException, SignatureException {
+        thrown.expectCause(IsInstanceOf.<Throwable>instanceOf(NotaryException.class));
+        Future issuanceFlow = issuer.startFlow(new IssueSanctionsListFlow.Initiator());
+        network.runNetwork();
+        issuanceFlow.get();
+        getSanctionsList(a, issuerParty);
+
+        IOUIssueFlow.Initiator iouIssueFlow = new IOUIssueFlow.Initiator(1, b.getInfo().getLegalIdentities().get(0), issuerParty);
+        Future iouIssueFuture = a.startFlow(iouIssueFlow);
+        network.runNetwork();
+
+        SignedTransaction iouIssueTransaction = (SignedTransaction) iouIssueFuture.get();
+        iouIssueTransaction.verifySignaturesExcept(b.getInfo().getLegalIdentities().get(0).getOwningKey());
+
+        Future updateIOUFuture = issuer.startFlow(new UpdateSanctionsListFlow.Initiator(c.getInfo().getLegalIdentities().get(0)));
+        network.runNetwork();
+        updateIOUFuture.get();
+
+        IOUIssueFlow.Initiator iouReissue = new IOUIssueFlow.Initiator(1, b.getInfo().getLegalIdentities().get(0), issuerParty);
+        Future iouReissueFuture = a.startFlow(iouReissue);
+        network.runNetwork();
+
+        iouReissueFuture.get();
+    }
+
+    @Test
+    public void dealSucceedsIfListIsCollectedAgainAfterUpdate() throws ExecutionException, InterruptedException, SignatureException {
+        Future issuanceFlow = issuer.startFlow(new IssueSanctionsListFlow.Initiator());
+        network.runNetwork();
+        issuanceFlow.get();
+        getSanctionsList(a, issuerParty);
+
+        IOUIssueFlow.Initiator iouIssueFlow = new IOUIssueFlow.Initiator(1, b.getInfo().getLegalIdentities().get(0), issuerParty);
+        Future iouIssueFuture = a.startFlow(iouIssueFlow);
+        network.runNetwork();
+
+        SignedTransaction iouIssueTransaction = (SignedTransaction) iouIssueFuture.get();
+        iouIssueTransaction.verifySignaturesExcept(b.getInfo().getLegalIdentities().get(0).getOwningKey());
+
+        Future updateIOUFuture = issuer.startFlow(new UpdateSanctionsListFlow.Initiator(c.getInfo().getLegalIdentities().get(0)));
+        network.runNetwork();
+        updateIOUFuture.get();
+
+        //update on node a only
+        Future getUpdatedListAgain = a.startFlow(new GetSanctionsListFlow.Initiator(issuerParty));
+        network.runNetwork();
+        getUpdatedListAgain.get();
+
+        IOUIssueFlow.Initiator iouDeal2 = new IOUIssueFlow.Initiator(1, b.getInfo().getLegalIdentities().get(0), issuerParty);
+        Future iouDeal2Future = a.startFlow(iouDeal2);
+        network.runNetwork();
+        iouDeal2Future.get();
+
+        IOUIssueFlow.Initiator iouDeal3 = new IOUIssueFlow.Initiator(1, b.getInfo().getLegalIdentities().get(0), issuerParty);
+        Future iouDeal3Future = a.startFlow(iouDeal3);
+        network.runNetwork();
+
+        iouDeal3Future.get();
+    }
+
+    @Test
+    public void duringTxResolutionLatestRefIsProvidedToCounterparty() throws ExecutionException, InterruptedException, SignatureException {
+        Future issuanceFlow = issuer.startFlow(new IssueSanctionsListFlow.Initiator());
+        network.runNetwork();
+        issuanceFlow.get();
+        getSanctionsList(a, issuerParty);
+
+        IOUIssueFlow.Initiator iouIssueFlow = new IOUIssueFlow.Initiator(1, b.getInfo().getLegalIdentities().get(0), issuerParty);
+        Future iouIssueFuture = a.startFlow(iouIssueFlow);
+        network.runNetwork();
+
+        SignedTransaction iouIssueTransaction = (SignedTransaction) iouIssueFuture.get();
+        iouIssueTransaction.verifySignaturesExcept(b.getInfo().getLegalIdentities().get(0).getOwningKey());
+
+        Future updateIOUFuture = issuer.startFlow(new UpdateSanctionsListFlow.Initiator(c.getInfo().getLegalIdentities().get(0)));
+        network.runNetwork();
+        updateIOUFuture.get();
+
+        //update on node a only
+        Future getUpdatedListAgain = a.startFlow(new GetSanctionsListFlow.Initiator(issuerParty));
+        network.runNetwork();
+        getUpdatedListAgain.get();
+
+        //take down issuer, so isn't able to provide new list to node b
+        issuer.stop();
+
+        IOUIssueFlow.Initiator iouDeal2 = new IOUIssueFlow.Initiator(1, b.getInfo().getLegalIdentities().get(0), issuerParty);
+        Future iouDeal2Future = a.startFlow(iouDeal2);
+        network.runNetwork();
+        iouDeal2Future.get();
 
 
     }

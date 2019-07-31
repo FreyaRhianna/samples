@@ -190,8 +190,9 @@ class IOUFlowTests {
         updateFuture.getOrThrow()
 
         //update on node a only
-        getSanctionsList(a, issuerParty)
-
+        val getUpdatedListAgain = a.startFlow(GetSanctionsListFlow.Initiator(issuerParty))
+        network.runNetwork()
+        getUpdatedListAgain.getOrThrow()
 
         val dealFlow2 = IOUIssueFlow.Initiator(1, b.info.singleIdentity(), issuerParty)
         val dealFuture2 = a.startFlow(dealFlow2)
